@@ -1,171 +1,91 @@
-Assignment 1: File Explorer Application
-Title
+File Explorer Application
+Title : 
 Terminal-Based File Explorer using C++
 
-Objective
-To design and implement a command-line file management tool in C++ that allows users to navigate, view, and manipulate files and directories within a Linux environment. 
-The application mimics basic functionalities of the 
-Linux ls, cp, mv, and rm commands while featuring both 
-Normal Mode (for browsing) and Command Mode (for executing file operations).
-
-Software Requirements
-Operating System: Linux
-Compiler: g++ (GNU C++ Compiler)
-Library Used: <filesystem> (C++17 standard)
-Build System: make
-
-Setup Instructions:
-
-Installation
-To install g++ (if not already available):
-sudo apt install g++
-Compilation
-
-In the project directory:
-
+Prerequisites
+G++ compiler
+sudo apt-get install g++
+How to compile project
+go to project directory and run following command
 make
-Clean Build
+To clean solution
 make clean
-Execution
+How to Run project
 ./main
+Functionality Terminal File Explorer
+File explorer is work in two modes. The application is start in normal mode, which is the default mode and used to explore the current directory and navigate around in the filesystem.
+The root of the application is the directory where the application was started.
+The last line of the display screen is to be used as status bar - to be used in normal and command-line modes.
 
-Project Overview
+1. Normal Mode:
+1.1 Read and display list of files and directories in the current folder
 
-The File Explorer is a terminal-based interactive program that lets users explore the file system and perform common operations directly from the command line.
-It provides:
+File explorer show each file in the directory (one entry per line). The following attributes are visible for each file
 
-Real-time directory display
-File metadata such as name, size, permissions, and timestamps
-Smooth directory navigation
-Dual working modes (Normal & Command)
+File Name
+File size (Human readable format similar to ls -lh)
+Ownership (User & Group) & Permissions
+Last modified
+The File explorer also handle scrolling (vertical overflow) in case the directory has a lot of files.
 
-1. Normal Mode
-When the application starts, it opens in Normal Mode — a browsing interface similar to the ls -lh command output.
+The file explorer also show the entries “.” & “..” for current and parent directory respectively.
 
-Features
-Displays all files and directories in the current folder, including . and .. entries.
+User is able to navigate up & down the file list using corresponding arrow keys.
 
-Shows attributes for each entry:
-File name
-File size (human-readable format)
-Ownership (User and Group)
-Permissions (rwx)
-Last modified date
-Supports vertical scrolling for directories with many entries.
 
-Navigation:
-Arrow keys for moving up and down
-Enter key to:
-Open a directory and view its contents
-Open a file using the system’s default application
 
-2. Command Mode
+1.2 Open files & directories
 
-Command Mode is activated by pressing the : (colon) key.
-The bottom status bar changes to accept typed commands.
-Press Esc at any time to return to Normal Mode.
+When enter is pressed
+Directory​ - It will Clear the screen and Navigate into the directory and shows the files & directories inside it as specified in point 1
+Files​ - It will open files using the corresponding default application.
+2. Command Mode:
+The application is enter the command mode whenever the : (colon) key is pressed.
+Upon entering the command mode the user should be able to enter different commands. All commands should appear in a bottom status bar
 
-Supported Commands
-File and Directory Operations
-Copy
+2.1 copy, move and rename
+
 copy <source_file(s)> <destination_directory>
-
-Example:
-copy notes.txt report.docx ~/Documents
-Move
 move <source_file(s)> <destination_directory>
+Eg:
+copy foo.txt bar.txt baz.mp4 ~/foobar
+move foo.txt bar.txt baz.mp4 ~/foobar
+rename foo.txt bar.txt
+Copying / Moving of directories is also be implemented
 
-Example:
-move sample.txt ~/Backup
-Rename
-rename <old_name> <new_name>
+2.2 create files and directories
 
-Example:
-rename draft.txt final.txt
-Create File / Directory
 create_file <file_name> <destination_path>
 create_dir <dir_name> <destination_path>
+Eg:
+create_file foo.txt ~/foobar
+create_file foo.txt .
+create_dir folder_name ~/foobar
+2.3 delete files and directories
 
-
-Example:
-create_file notes.txt ~/Projects
-create_dir new_folder ~/Projects
-Delete File / Directory
 delete_file <file_path>
 delete_dir <directory_path>
+Eg:
+delete_file ~/foobar/foo.txt.
+delete_dir ~/foobar/folder_name
+2.4 goto
 
-
-Example:
-delete_file ~/Projects/old.txt
-delete_dir ~/Projects/unused_folder
-Navigate to Directory
 goto <directory_path>
-
-
-Example:
-goto /home/user/Documents
+Eg:
+goto /home/darshan/
 goto ~
-Search for a File
+2.5 Search a file or folder given fullname.
+
 search <filename>
+Eg:
+search foo.txt
+Search for the given filename under the current directory recursively
 
+2.6 Snapshotting the filesystem and dump into a file
 
-Recursively searches the current directory and subdirectories.
-Example:
-search main.cpp
-Snapshot the Directory Structure
-snapshot <directory_path> <output_file>
+snapshot <folder> <dumpfile>​
+Eg:
+snapshot ~/foobar/ dumpimg
+Given a base directory this command recursively crawl the directory and store the output in dumpfile.
 
-
-Recursively lists all files and subdirectories, saving the output into the specified dump file.
-Example:
-snapshot ~/Projects dump.txt
-
-3. Program Flow
-Program initializes in Normal Mode, displaying the current directory’s contents.
-User can:
-Move around using arrow keys.
-Press Enter to open files/folders.
-Press : to enter Command Mode.
-In Command Mode, commands are parsed and executed immediately.
-Press Esc to switch back to browsing mode.
-
-Sample Code Snippet
-#include <iostream>
-#include <filesystem>
-#include <unistd.h>
-using namespace std;
-namespace fs = filesystem;
-
-int main() {
-    string currentPath = fs::current_path();
-    cout << "Current Directory: " << currentPath << endl;
-
-    for (auto &entry : fs::directory_iterator(currentPath)) {
-        cout << entry.path().filename().string() << endl;
-    }
-
-    return 0;
-}
-
-Expected Output (Example Terminal View)
---------------------------------------------
-| Name            Size   Owner   Permissions  Modified Date |
-|------------------------------------------------------------|
-| .               -      user   drwxr-xr-x   2025-11-08     |
-| ..              -      user   drwxr-xr-x   2025-11-08     |
-| main.cpp        2.3K   user   -rw-r--r--   2025-11-07     |
-| notes.txt       1.1K   user   -rw-rw-r--   2025-11-06     |
---------------------------------------------
-Status: Normal Mode | Press ':' for Command Mode
-
-Learning Outcomes
-
-Hands-on experience with C++ filesystem and OS interaction
-
-Understanding terminal-based UI design and key event handling
-
-Implementation of command parsing and process management
-
-Practice with Makefiles and modular C++ development
-
-Improved knowledge of Linux system programming
+2.7 On pressing ‘ESC’ key the application should go to Normal Mode
